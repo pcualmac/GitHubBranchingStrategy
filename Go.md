@@ -1,6 +1,6 @@
 # Git Workflow Tool
 
-A command-line tool to automate common Git branching workflows, following a structured branching model with Development, Nightly, Release, and Master branches.
+A command-line tool to automate common Git branching workflows, following a structured branching model with Development, Nightly, Release, and main branches.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -106,25 +106,25 @@ For help:
 ```bash
 ./git-workflow-tool ch <hotfix-name>
 ```
-- Creates hotfix branch from Master
+- Creates hotfix branch from main
 - Branch naming: `hotfix/<hotfix-name>`
 
-#### Update Master with Hotfix (`um`)
+#### Update main with Hotfix (`um`)
 ```bash
 ./git-workflow-tool um <hotfix-branch>
 ```
-- Merges hotfix into Master
+- Merges hotfix into main
 - Forward-ports to Development
 - Cleans up hotfix branch
 
 ### Maintenance Workflow
 
-#### Sync Development with Master (`m`)
+#### Sync Development with main (`m`)
 ```bash
 ./git-workflow-tool m
 ```
 1. Creates backup tag of Development
-2. Hard resets Development to origin/master
+2. Hard resets Development to origin/main
 3. Force pushes changes
 
 **Warning:** Destructive operation - use with caution!
@@ -200,7 +200,7 @@ git commit -m "Implement auth service"
 git add .
 git commit -m "Fix security vulnerability"
 
-# Merge to Master and Development
+# Merge to main and Development
 ./git-workflow-tool um hotfix/critical-security-fix
 ```
 

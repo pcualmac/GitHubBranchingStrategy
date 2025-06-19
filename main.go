@@ -13,7 +13,7 @@ const (
 	DevelopmentBranch = "Development"
 	NightlyBranch     = "Nightly"
 	ReleaseBranch     = "Release"
-	MasterBranch      = "Master"
+	mainBranch        = "main"
 )
 
 // GitCommandExecutor defines an interface for executing Git commands
@@ -312,9 +312,9 @@ func (wm *WorkflowManager) developmentToRelease(versionTag string) error {
 	return nil
 }
 
-// syncDevWithMaster backs up Development and resets Development to Master
-func (wm *WorkflowManager) syncDevWithMaster() error {
-	fmt.Println("--- M: Backing up Development and resetting to Master ---")
+// syncDevWithmain backs up Development and resets Development to Mamain
+func (wm *WorkflowManager) syncDevWithmain() error {
+	fmt.Println("--- M: Backing up Development and resetting to main ---")
 
 	if err := wm.checkoutBranch(DevelopmentBranch); err != nil {
 		return fmt.Errorf("failed to checkout Development for backup: %w", err)
@@ -333,31 +333,31 @@ func (wm *WorkflowManager) syncDevWithMaster() error {
 	if err := wm.fetchOrigin(); err != nil {
 		return fmt.Errorf("failed to fetch origin before resetting Development: %w", err)
 	}
-	fmt.Println("Hard resetting Development to origin/master... (DANGER: This discards local Development changes)")
-	if err := wm.executor.RunGitCommand("reset", "--hard", "origin/master"); err != nil {
-		return fmt.Errorf("failed to hard reset Development to origin/master: %w", err)
+	fmt.Println("Hard resetting Development to origin/main... (DANGER: This discards local Development changes)")
+	if err := wm.executor.RunGitCommand("reset", "--hard", "origin/main"); err != nil {
+		return fmt.Errorf("failed to hard reset Development to origin/main: %w", err)
 	}
 	fmt.Println("Force pushing Development to remote... (DANGER: This overwrites remote Development)")
 	if err := wm.pushBranch(DevelopmentBranch, true, false); err != nil {
 		return fmt.Errorf("failed to force push Development: %w", err)
 	}
-	fmt.Println("--- M: Development Backup and Sync with Master Completed ---")
+	fmt.Println("--- M: Development Backup and Sync with main Completed ---")
 	return nil
 }
 
-// createHotfix creates a new hotfix branch from Master
+// createHotfix creates a new hotfix branch from main
 func (wm *WorkflowManager) createHotfix(hotfixName string) error {
 	fmt.Println("--- C_H: Creating Hotfix Branch ---")
 
-	if err := wm.checkoutBranch(MasterBranch); err != nil {
-		return fmt.Errorf("failed to checkout Master branch: %w", err)
+	if err := wm.checkoutBranch(mainBranch); err != nil {
+		return fmt.Errorf("failed to checkout main branch: %w", err)
 	}
-	if err := wm.pullOrigin(MasterBranch); err != nil {
-		return fmt.Errorf("failed to pull Master branch: %w", err)
+	if err := wm.pullOrigin(mainBranch); err != nil {
+		return fmt.Errorf("failed to pull main branch: %w", err)
 	}
 
 	newHotfixBranch := fmt.Sprintf("hotfix/%s", hotfixName)
-	fmt.Printf("Creating new hotfix branch: %s from Master...\n", newHotfixBranch)
+	fmt.Printf("Creating new hotfix branch: %s from main...\n", newHotfixBranch)
 	if err := wm.executor.RunGitCommand("checkout", "-b", newHotfixBranch); err != nil {
 		return fmt.Errorf("failed to create new hotfix branch: %w", err)
 	}
@@ -369,19 +369,19 @@ func (wm *WorkflowManager) createHotfix(hotfixName string) error {
 	return nil
 }
 
-// updateMaster merges a hotfix into Master and forward-ports to Development
-func (wm *WorkflowManager) updateMaster(hotfixBranch string) error {
-	fmt.Println("--- U_M: Updating Master with Hotfix and Forward-Porting ---")
+// updatemain merges a hotfix into main and forward-ports to Development
+func (wm *WorkflowManager) updatemain(hotfixBranch string) error {
+	fmt.Println("--- U_M: Updating main with Hotfix and Forward-Porting ---")
 
-	if err := wm.checkoutBranch(MasterBranch); err != nil {
-		return fmt.Errorf("failed to checkout Master branch: %w", err)
+	if err := wm.checkoutBranch(mainBranch); err != nil {
+		return fmt.Errorf("failed to checkout main branch: %w", err)
 	}
 	if err := wm.mergeBranch(hotfixBranch, true, ""); err != nil {
-		return fmt.Errorf("merge conflict detected during hotfix merge to Master. Please resolve manually: %w", err)
+		return fmt.Errorf("merge conflict detected during hotfix merge to main. Please resolve manually: %w", err)
 	}
 
-	if err := wm.pushBranch(MasterBranch, false, false); err != nil {
-		return fmt.Errorf("failed to push Master after hotfix merge: %w", err)
+	if err := wm.pushBranch(mainBranch, false, false); err != nil {
+		return fmt.Errorf("failed to push main after hotfix merge: %w", err)
 	}
 
 	if err := wm.checkoutBranch(DevelopmentBranch); err != nil {
@@ -403,7 +403,7 @@ func (wm *WorkflowManager) updateMaster(hotfixBranch string) error {
 	if err := wm.executor.RunGitCommand("push", "origin", "--delete", hotfixBranch); err != nil {
 		fmt.Printf("Warning: Failed to delete remote hotfix branch %s: %v\n", hotfixBranch, err)
 	}
-	fmt.Println("--- U_M: Master Updated and Hotfix Forward-Ported Successfully ---")
+	fmt.Println("--- U_M: main Updated and Hotfix Forward-Ported Successfully ---")
 	return nil
 }
 
@@ -418,9 +418,9 @@ func printUsage() {
 	fmt.Println("  cf <feature-branch>     Consume feature branch into Development")
 	fmt.Println("  promote                 Promote Development to Nightly with validation")
 	fmt.Println("  dr [version-tag]        Promote Development to Release (optional version tag)")
-	fmt.Println("  m                       Sync Development with Master (backup and reset)")
-	fmt.Println("  ch <hotfix-name>        Create hotfix branch from Master")
-	fmt.Println("  um <hotfix-branch>      Update Master with hotfix and forward-port")
+	fmt.Println("  m                       Sync Development with main (backup and reset)")
+	fmt.Println("  ch <hotfix-name>        Create hotfix branch from main")
+	fmt.Println("  um <hotfix-branch>      Update main with hotfix and forward-port")
 	fmt.Println("  help                    Display this help message")
 }
 
@@ -471,7 +471,7 @@ func main() {
 		}
 		err = wm.developmentToRelease(versionTag)
 	case "m":
-		err = wm.syncDevWithMaster()
+		err = wm.syncDevWithmain()
 	case "ch":
 		if len(os.Args) < 3 {
 			fmt.Println("Error: Hotfix name required")
@@ -485,7 +485,7 @@ func main() {
 			printUsage()
 			os.Exit(1)
 		}
-		err = wm.updateMaster(os.Args[2])
+		err = wm.updatemain(os.Args[2])
 	case "help":
 		printUsage()
 		os.Exit(0)

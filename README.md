@@ -11,7 +11,7 @@ Based on the provided `Github_drawio.png` labels, here's a comprehensive analysi
 ## Key Branches Explanation
 
 ### Main Branches
-- **Master**: Represents production-ready code (protected branch)
+- **main**: Represents production-ready code (protected branch)
 - **Release**: Stabilized branch for preparing production releases
 - **Development**: Main integration branch for feature development
 
@@ -29,15 +29,15 @@ Based on the provided `Github_drawio.png` labels, here's a comprehensive analysi
 ## Workflow Path Analysis
 
 ### Standard Development Flow
-1. `feature team 1/2` → `Development` → `Release` → `Master`
+1. `feature team 1/2` → `Development` → `Release` → `main`
 2. `Nightly` builds likely pull from `Development`
 
 ### Hotfix Flow
-1. `Master` → `Release Fixes` (bugfix) → `Master` (via PR)
+1. `main` → `Release Fixes` (bugfix) → `main(via PR)
 2. `Release Fixes` → `Development` (to maintain sync)
 
 ### Environment Promotion
-`PC1/PC2/PC3` → `Hotfix` (staging) → `Release` → `Master`
+`PC1/PC2/PC3` → `Hotfix` (staging) → `Release` → `main`
 
 ## Best Practices Observed
 1. Clear separation of concerns between feature development and release stabilization
@@ -46,8 +46,8 @@ Based on the provided `Github_drawio.png` labels, here's a comprehensive analysi
 4. Hotfix path maintains production stability
 
 ## Potential Improvements
-1. Consider adding `main` as alias/synonym for `master` (GitHub's default)
-2. Implement branch protection rules for `master` and `release`
+1. Consider adding `main` as alias/synonym for `main` (GitHub's default)
+2. Implement branch protection rules for `main` and `release`
 3. Add version tagging strategy for `release` branches
 4. Consider ephemeral feature branches (delete after merge)
 
@@ -61,20 +61,20 @@ graph TD
     feature_team_2 -->|PR| Development
     Development -->|Promote| Nightly
     Development -->|Stabilize| Release
-    Release -->|Deploy| Master
-    Master -->|Hotfix| Release_Fixes
-    Release_Fixes -->|Patch| Master
+    Release -->|Deploy| main
+    main -->|Hotfix| Release_Fixes
+    Release_Fixes -->|Patch| main
     Release_Fixes -->|Merge| Development
-    Master -->|Deploy| Hotfix
+    main->|Deploy| Hotfix
 ```
 
-|                | feature_team_* | Development | Nightly  | Release |  HotFix |  Master |
+|                | feature_team_* | Development | Nightly  | Release |  HotFix |  main |
 |----------------|----------------|-------------|----------|---------|---------|---------|
 | feature_team_* | U_B            | F_M_D       |          |         |         |         |
 | Development    | C_F            | U_D         | Promote  | D_R     |         |         |
 | Release        |                |             |          | Stabiliz|         | M       |
 | HotFix         |                |             |          |         | U_H     | Deplo   |
-| Master         |                | M           |          |         | C_H     | U_M     |
+| main         |                | M           |          |         | C_H     | U_M     |
 
 **U_B**
 ```git
@@ -242,18 +242,18 @@ git push origin --tags
 --------------------------------
 git checkout Development
 git fetch origin
-git reset --hard origin/master
+git reset --hard origin/main
 git push origin Development --force
 
 ```
 
 **C_H**
 ```git
-# Step 1: Switch to Master and ensure it's up to date
-git checkout Master
-git pull origin Master
+# Step 1: Switch to main and ensure it's up to date
+git checkout main
+git pull origin main
 
-# Step 2: Create a new hotfix branch from Master
+# Step 2: Create a new hotfix branch from main
 git checkout -b hotfix/fix-issue-name
 
 # Step 3: Push the hotfix branch to the remote repository
@@ -262,12 +262,12 @@ git push origin hotfix/fix-issue-name
 
 **U_M**
 ```git
-# 1. Merge to Master
-git checkout Master
+# 1. Merge to main
+git checkout main
 git merge hotfix/issue-123 --no-ff
 
 # 2. Push to production
-git push origin Master
+git push origin main
 
 # 3. Forward-port to Development
 git checkout Development
@@ -289,5 +289,5 @@ git push origin --delete hotfix/issue-123
 | **Code Review** | Address comments                                                     | `git commit --amend` then `git push -f`                                     | GitHub UI: Commit suggestions/GitHub Desktop                                    |
 | **Merge**      | Approve & merge                                                      | `gh pr merge -m -d`                                                        | GitHub UI: "Merge pull request" button                                          |
 | **Release**    | Promote to Release                                                   | `git checkout Release && git merge Development --no-ff`                     | GitHub UI: Create new PR from Development→Release                               |
-| **Production** | Deploy to Master                                                     | `git checkout Master && git merge Release --no-ff`                          | GitHub UI: Create PR from Release→Master with production checklist              |
-| **Hotfix**     | Emergency patch                                                      | `git checkout -b hotfix Master && git push origin hotfix`                   | GitHub UI: Create hotfix branch from Master                                    |
+| **Production** | Deploy to main                                                     | `git checkout main && git merge Release --no-ff`                          | GitHub UI: Create PR from Release→main with production checklist              |
+| **Hotfix**     | Emergency patch                                                      | `git checkout -b hotfix main && git push origin hotfix`                   | GitHub UI: Create hotfix branch from main                                    |
