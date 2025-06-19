@@ -6,7 +6,7 @@
 ## Branching Workflow Overview
 Based on the provided `Github_drawio.png` labels, here's a comprehensive analysis of a potential GitHub branching strategy:
 
-![GitHub Branching Model](Github_drawio.png)
+![GitHub Branching Model](Github.png)
 
 ## Key Branches Explanation
 
