@@ -65,7 +65,7 @@ graph TD
     main -->|Hotfix| Release_Fixes
     Release_Fixes -->|Patch| main
     Release_Fixes -->|Merge| Development
-    main->|Deploy| Hotfix
+    main -->|Deploy| Hotfix
 ```
 
 |                | feature_team_* | Development | Nightly  | Release |  HotFix |  main |
