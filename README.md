@@ -4,7 +4,7 @@
 - [GitHub Branching Strategy Analysis](Go.md) - Detailed explanation of the branching model this tool implements
 
 ## Branching Workflow Overview
-Based on the provided `Github_drawio.png` labels, here's a comprehensive analysis of a potential GitHub branching strategy:
+Based on the provided `Github.png` labels, here's a comprehensive analysis of a potential GitHub branching strategy:
 
 ![GitHub Branching Model](Github.png)
 
