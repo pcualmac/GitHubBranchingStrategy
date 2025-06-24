@@ -46,10 +46,9 @@ Based on the provided `Github.png` labels, here's a comprehensive analysis of a 
 4. Hotfix path maintains production stability
 
 ## Potential Improvements
-1. Consider adding `main` as alias/synonym for `main` (GitHub's default)
-2. Implement branch protection rules for `main` and `release`
-3. Add version tagging strategy for `release` branches
-4. Consider ephemeral feature branches (delete after merge)
+1. Implement branch protection rules for `main` and `release`
+2. Add version tagging strategy for `release` branches
+3. Consider ephemeral feature branches (delete after merge)
 
 ## Visual Workflow Representation
 ```mermaid
